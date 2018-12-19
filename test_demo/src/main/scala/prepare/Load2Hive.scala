@@ -1,6 +1,6 @@
 package prepare
 
-import org.apache.spark.sql.{SaveMode, SparkSession}
+import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 
 /**
   * 导入数据到Hive
@@ -10,18 +10,18 @@ import org.apache.spark.sql.{SaveMode, SparkSession}
   */
 object Load2Hive {
   def main(args: Array[String]): Unit = {
-    if(args.length !=2){
-      println("Usage: prepare.Load2Hive <input> <hive_table>")
+    if(args.length !=4){
+      println("Usage: prepare.Load2Hive <input> <hive_table> <times> <appName>")
       System.exit(-1)
     }
     //
-    val (input, table) = (args(0),args(1))
+    val (input, table, num , appName) = (args(0),args(1), args(2).toInt,args(3))
 
-    val spark = SparkSession.builder().appName("Load demo data to hive").enableHiveSupport().getOrCreate()
+    val spark = SparkSession.builder().appName(appName).enableHiveSupport().getOrCreate()
 
     val df =spark.read.format("csv").option("header", "true").option("inferSchema","true").load(input)
 
-    df.write.mode(SaveMode.Overwrite).saveAsTable(table)
+    Array.fill[DataFrame](num)(df).reduce(_ union _).write.mode(SaveMode.Overwrite).saveAsTable(table)
 
     spark.stop()
   }

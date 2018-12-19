@@ -1,0 +1,11 @@
+
+Prepare做的测试：
+1. 把data.csv导入到demo目录；
+2. data.csv重复1、5 、10次其导入性能对比；
+
+1）Spark初始化过程（日志）从： NativeCodeLoader  ~ Connecting to master 。。。
+    耗时平均在4s左右；
+2）连接Hive从： loading hive config ~ warehouseLocation
+    耗时从11s~17s不等；
+
+总体任务耗时在1.5 minutes 左右，并且 导入10次，约60万数据的耗时并不比前面的查，基本一致；

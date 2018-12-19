@@ -16,6 +16,9 @@ import java.io.IOException;
  * 1. 上传算法包
  * 2. 上传数据
  * 3. 执行数据导入到Hive
+ *
+ *
+ *
  * @Author: fansy
  * @Time: 2018/12/19 11:49
  * @Email: fansy1990@foxmail.com
@@ -25,7 +28,8 @@ public class Prepare {
     public static void main(String[] args) throws IOException {
 //        uploadJar();
 //        uploadData();
-        load2Hive();
+//        load2Hive_second();
+        load2Hive_third();
     }
 
     /**
@@ -56,11 +60,31 @@ public class Prepare {
     }
 
     public static void load2Hive(){
+        // default.demo : 62988 records
         String mainClass = "prepare.Load2Hive";
-        String[] arguments = {"/user/root/data.csv","default.demo"};
+        String[] arguments = {"/user/root/data.csv","default.demo","1","first load to hive"};
         Args innerArgs = Args.getArgs("Load data to Hive",mainClass,arguments, EngineType.SPARK);
         SubmitResult submitResult = SparkYarnJob.run(innerArgs);
         SparkYarnJob.monitor(submitResult);
+    }
+
+    public static void load2Hive_second(){
+        // default.demo_15m : 314940 records
+        String mainClass = "prepare.Load2Hive";
+        String[] arguments = {"/user/root/data.csv","default.demo_15m","5","second load to hive"};
+        Args innerArgs = Args.getArgs("Load data to Hive 15m",mainClass,arguments, EngineType.SPARK);
+        SubmitResult submitResult = SparkYarnJob.run(innerArgs);
+        SparkYarnJob.monitor(submitResult);
+    }
+
+    public static void load2Hive_third(){
+        // default.demo_15m : 629880 records
+        String mainClass = "prepare.Load2Hive";
+        String[] arguments = {"/user/root/data.csv","default.demo_30m","10","third load to hive"};
+        Args innerArgs = Args.getArgs("Load data to Hive 30m",mainClass,arguments, EngineType.SPARK);
+//        SubmitResult submitResult = SparkYarnJob.run(innerArgs);
+//        SparkYarnJob.monitor(submitResult);
+        SparkYarnJob.runAndMonitor(innerArgs);
     }
 
 }

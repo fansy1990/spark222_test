@@ -21,26 +21,29 @@ import static demo.utils.SparkUtils.*;
 
 /**
  * 算法调用引擎，支持声明式或默认引擎选择；
+ *
  * @Author: fansy
  * @Time: 2018/12/6 10:43
  * @Email: fansy1990@foxmail.com
  */
 public class SparkYarnJob {
     private static final Logger logger = LoggerFactory.getLogger(SparkYarnJob.class);
+
     /**
      * 提交任务
+     *
      * @param args
      * @return
      */
-    public static SubmitResult run(Args args){
-        switch (args.getEngineType()){
+    public static SubmitResult run(Args args) {
+        switch (args.getEngineType()) {
             case YARN:
                 System.setProperty("SPARK_YARN_MODE", "true");
                 SparkConf sparkConf = getSparkConf(EngineType.YARN);
                 ClientArguments cArgs = new ClientArguments(args.argsForYarn());
                 Client client = new Client(cArgs, getConf(), sparkConf);
                 ApplicationId appId = client.submitApplication();
-                return SubmitResult.getSubmitResult(appId.toString(),args.getEngineType());
+                return SubmitResult.getSubmitResult(appId.toString(), args.getEngineType());
 
             case SPARK:
                 String jobId = SparkEngine.run(args.getAppName(), args.getMainClass(), args.getArgs());
@@ -49,46 +52,55 @@ public class SparkYarnJob {
             default:
                 logger.error("Algorithm Engine Failed!");
         }
-        return SubmitResult.getSubmitResult(null,null);
+        return SubmitResult.getSubmitResult(null, null);
     }
 
     /**
      * 提交任务并监控
+     *
      * @param appName
      * @param mainClass
      * @param args
      */
-    public static void runAndMonitor(String appName,String mainClass,String[] args){
-        Args innerArgs = Args.getArgs(appName,mainClass,args);
+    public static void runAndMonitor(String appName, String mainClass, String[] args) {
+        Args innerArgs = Args.getArgs(appName, mainClass, args);
+        runAndMonitor(innerArgs);
+    }
+
+    public static void runAndMonitor(Args innerArgs) {
         SubmitResult submitResult = SparkYarnJob.run(innerArgs);
         SparkYarnJob.monitor(submitResult);
     }
 
-    private static long getRandomInterval(){
+    private static long getRandomInterval() {
         int interval = Integer.parseInt(getValue("job.check.interval")) * 1000;
         return random.nextInt(interval);
     }
+
     private static Random random = new Random();
+
     /**
      * 监控任务
+     *
      * @param jobInfo
      */
-    public static void monitor(SubmitResult jobInfo){
-        boolean finished =false;
-        switch (jobInfo.getEngineType()){
-            case YARN:
-                while (!finished) {
-                    try {
-                        logger.info("Checking Job {} , running...", jobInfo.getJobId() );
+    public static void monitor(SubmitResult jobInfo) {
+        boolean finished = false;
+        try {
+            switch (jobInfo.getEngineType()) {
+                case YARN:
+                    while (!finished) {
+
+                        logger.info("Checking Job {} , running...", jobInfo.getJobId());
                         Thread.sleep(getRandomInterval());
                         FinalApplicationStatus applicationStatus = getFinalStatus(jobInfo.getJobId());
                         switch (applicationStatus) {
                             case SUCCEEDED:
-                                logger.info("=== {} 成功运行并完成!",jobInfo.getJobId());
+                                logger.info("=== {} 成功运行并完成!", jobInfo.getJobId());
                                 finished = true;
                                 break;
                             case FAILED:
-                                logger.warn("=== {} 运行异常!",jobInfo.getJobId());
+                                logger.warn("=== {} 运行异常!", jobInfo.getJobId());
                                 cleanupStagingDir(jobInfo.getJobId());
                                 finished = true;
                                 break;
@@ -105,37 +117,35 @@ public class SparkYarnJob {
                                 finished = true;
                                 break;
                         }
-                    } catch (InterruptedException | YarnException | IOException e) {
-                        e.printStackTrace();
+
                     }
-                }
-            case SPARK:
-                SubmissionStatusResponse response = null;
-                while(!finished) {
-                    response = (SubmissionStatusResponse) getRestSubmissionClient().requestSubmissionStatus(jobInfo.getJobId(), true);
-                    logger.info("DriverState :{}",response.driverState());
-                    if("FINISHED" .equals(response.driverState()) ){
-                        finished = true;
-                    }
-                    if( "ERROR".equals(response.driverState())){
-                        finished = true;
-//                        throw new Exception("任务异常!");
-                    }
-                    if( "FAILED".equals(response.driverState())){
-                        finished = true ;
-//                        throw new Exception("任务失败!");
-                    }
-                    try {
+                case SPARK:
+                    SubmissionStatusResponse response = null;
+                    while (!finished) {
                         Thread.sleep(getRandomInterval());
-                    }catch (InterruptedException e){
-                        e.printStackTrace();
+                        response = (SubmissionStatusResponse) getRestSubmissionClient().requestSubmissionStatus(jobInfo.getJobId(), true);
+                        logger.info("DriverState :{}", response.driverState());
+                        if ("FINISHED".equals(response.driverState())) {
+                            finished = true;
+                        }
+                        if ("ERROR".equals(response.driverState())) {
+                            finished = true;
+//                        throw new Exception("任务异常!");
+                        }
+                        if ("FAILED".equals(response.driverState())) {
+                            finished = true;
+//                        throw new Exception("任务失败!");
+                        }
                     }
-                }
-                logger.info("Spark Engine Monitor done!");
-                break;
+                    logger.info("Spark Engine Monitor done!");
+                    break;
 
                 default:
 
+            }
+        } catch (InterruptedException | YarnException | IOException e) {
+            e.printStackTrace();
         }
     }
+
 }

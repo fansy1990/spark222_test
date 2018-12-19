@@ -101,7 +101,7 @@ public class SparkUtils {
                 // the code below should not be change
                 sparkConf.set("spark.submit.deployMode","cluster");
                 sparkConf.set("spark.driver.supervise","false");
-                sparkConf.set("spark.files", getValue("spark.files"));
+//                sparkConf.set("spark.files", getValue("spark.files"));
                 break;
             default:
                 logger.warn("Not support type:{}",engineType.name());
