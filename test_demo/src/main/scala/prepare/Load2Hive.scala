@@ -20,9 +20,11 @@ object Load2Hive {
     val spark = SparkSession.builder().appName(appName).enableHiveSupport().getOrCreate()
 
     val df =spark.read.format("csv").option("header", "true").option("inferSchema","true").load(input)
-
-    Array.fill[DataFrame](num)(df).reduce(_ union _).write.partitionBy(partitionColumn).mode(SaveMode.Overwrite).saveAsTable(table)
-
+    partitionColumn match{
+      case "" => Array.fill[DataFrame](num)(df).reduce(_ union _).write.mode(SaveMode.Overwrite).saveAsTable(table)
+      case "*" => Array.fill[DataFrame](num)(df).reduce(_ union _).write.partitionBy(df.schema.fieldNames :_* ).mode(SaveMode.Overwrite).saveAsTable(table)
+      case _ => Array.fill[DataFrame](num)(df).reduce(_ union _).write.partitionBy(partitionColumn.split(",").map(_.trim) :_*).mode(SaveMode.Overwrite).saveAsTable(table)
+    }
     spark.stop()
   }
 }
