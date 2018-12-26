@@ -10,7 +10,7 @@ import org.apache.spark.sql.{SaveMode, SparkSession}
 object DescribeStatics {
   def main(args: Array[String]): Unit = {
     if(args.length != 3){
-      println("Usage: prepare.Load2Hive <input> <hive_table>  <appName>")
+      println("Usage: statics.DescribeStatics <input> <hive_table>  <appName>")
       System.exit(-1)
     }
     //

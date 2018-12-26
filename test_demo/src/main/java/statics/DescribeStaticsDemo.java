@@ -15,8 +15,8 @@ public class DescribeStaticsDemo {
     static String mainClass = "statics.DescribeStatics";
     public static void main(String[] args) throws IOException {
 //        Prepare.uploadJar();
-//        first();
-        second();
+        first();
+//        second();
     }
 
     public static void first() {

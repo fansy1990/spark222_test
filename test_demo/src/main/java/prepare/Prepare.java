@@ -26,11 +26,11 @@ import java.io.IOException;
 public class Prepare {
     private static Logger log = LoggerFactory.getLogger(Prepare.class);
     public static void main(String[] args) throws IOException {
-        uploadJar();
-//        uploadData();
+//        uploadJar();
+        uploadData();
 //        load2Hive_second();
-//           load2Hive_third();
-        load2Hive_fourth();
+           load2Hive_third();
+//        load2Hive_fourth();
     }
 
     /**
@@ -63,7 +63,7 @@ public class Prepare {
     public static void load2Hive(){
         // default.demo : 62988 records
         String mainClass = "prepare.Load2Hive";
-        String[] arguments = {"/user/root/data.csv","default.demo","1","first load to hive"};
+        String[] arguments = {"/user/root/data.csv","default.demo","1","first load to hive",""};
         Args innerArgs = Args.getArgs("Load data to Hive",mainClass,arguments, EngineType.SPARK);
         SubmitResult submitResult = SparkYarnJob.run(innerArgs);
         SparkYarnJob.monitor(submitResult);
@@ -72,7 +72,7 @@ public class Prepare {
     public static void load2Hive_second(){
         // default.demo_15m : 314940 records
         String mainClass = "prepare.Load2Hive";
-        String[] arguments = {"/user/root/data.csv","default.demo_15m","5","second load to hive"};
+        String[] arguments = {"/user/root/data.csv","default.demo_15m","5","second load to hive",""};
         Args innerArgs = Args.getArgs("Load data to Hive 15m",mainClass,arguments, EngineType.SPARK);
         SubmitResult submitResult = SparkYarnJob.run(innerArgs);
         SparkYarnJob.monitor(submitResult);
@@ -81,7 +81,7 @@ public class Prepare {
     public static void load2Hive_third(){
         // default.demo_15m : 629880 records
         String mainClass = "prepare.Load2Hive";
-        String[] arguments = {"/user/root/data.csv","default.demo_30m","10","third load to hive"};
+        String[] arguments = {"/user/root/data.csv","default.demo_30m","10","third load to hive",""};
         Args innerArgs = Args.getArgs("Load data to Hive 30m",mainClass,arguments, EngineType.SPARK);
 //        SubmitResult submitResult = SparkYarnJob.run(innerArgs);
 //        SparkYarnJob.monitor(submitResult);

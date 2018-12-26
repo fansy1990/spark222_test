@@ -73,11 +73,13 @@ public class SparkYarnJob {
     }
 
     private static long getRandomInterval() {
+        boolean random = Boolean.parseBoolean(getValue("job.check.interval.random"));
         int interval = Integer.parseInt(getValue("job.check.interval")) * 1000;
-        return random.nextInt(interval);
+        int ret =  random ?  random_key.nextInt(interval) : interval;
+        return ret;
     }
 
-    private static Random random = new Random();
+    private static Random random_key = new Random();
 
     /**
      * 监控任务
@@ -85,6 +87,9 @@ public class SparkYarnJob {
      * @param jobInfo
      */
     public static void monitor(SubmitResult jobInfo) {
+        if(jobInfo.getJobId() == null){
+            logger.warn("提交任务异常，返回APP ID 为 Null！");
+        }
         boolean finished = false;
         try {
             switch (jobInfo.getEngineType()) {
