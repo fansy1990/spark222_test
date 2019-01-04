@@ -15,8 +15,8 @@ public class DescribeStaticsDemo {
     static String mainClass = "statics.DescribeStatics";
     public static void main(String[] args) throws IOException {
 //        Prepare.uploadJar();
-        first();
-//        second();
+//        first();
+        second();
     }
 
     public static void first() {
@@ -27,7 +27,9 @@ public class DescribeStaticsDemo {
     }
 
     /**
-     * 1个 ApplicationMaster ； 2个子节点Executor； 耗时4.7 mins
+     * hive 表按照Age分区：1个 ApplicationMaster ； 2个子节点Executor； 耗时4.7 mins
+     * hive 表按照不分区：1个 ApplicationMaster ； 2个子节点Executor； 耗时1.6 mins
+
      */
     public static void second(){
         String appName = "demo_600w statics";

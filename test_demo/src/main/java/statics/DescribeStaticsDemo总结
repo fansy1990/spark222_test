@@ -1,5 +1,11 @@
 
 1. 使用命令行提交的方式来提交：
+    30m
 spark-submit --class statics.DescribeStatics --deploy-mode cluster test_demo-1.0-SNAPSHOT.jar default.demo_30m default.demo_30_statics statics_30m_01
+
+
+    600w 条记录
+spark-submit --class statics.DescribeStatics --deploy-mode cluster test_demo-1.0-SNAPSHOT.jar default.demo_600w default.demo_600w_statics statics_600w_01
+
 
 Spark延迟30秒 博客：https://blog.csdn.net/fansy1990/article/details/85266553

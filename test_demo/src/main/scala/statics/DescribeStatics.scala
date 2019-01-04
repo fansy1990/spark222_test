@@ -15,10 +15,13 @@ object DescribeStatics {
     }
     //
     val (input, table,  appName) = (args(0),args(1),args(2))
-
+    println(new java.util.Date()+": begin spark init...")
     val spark = SparkSession.builder().appName(appName).enableHiveSupport().getOrCreate()
+    println(new java.util.Date()+":  spark init done!")
 
     val data = spark.read.table(input)
+    println(new java.util.Date() + ": data.size" + data.count)
+
     data.describe( data.schema.fieldNames :_*).write.mode(SaveMode.Overwrite).saveAsTable(table)
 
     spark.stop()

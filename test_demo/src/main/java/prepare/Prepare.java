@@ -26,10 +26,10 @@ import java.io.IOException;
 public class Prepare {
     private static Logger log = LoggerFactory.getLogger(Prepare.class);
     public static void main(String[] args) throws IOException {
-//        uploadJar();
-        uploadData();
+        uploadJar();
+//        uploadData();
 //        load2Hive_second();
-           load2Hive_third();
+//           load2Hive_third();
 //        load2Hive_fourth();
     }
 
@@ -89,12 +89,12 @@ public class Prepare {
     }
 
     /**
-     * 导入600万记录，同时使用AGE分区
+     * 导入600万记录，同时不使用分区
      */
     public static void load2Hive_fourth(){
         // default.demo_15m : 629880 records
         String mainClass = "prepare.Load2Hive";
-        String[] arguments = {"/user/root/data.csv","default.demo_600w","100","fourth load to hive","AGE"};
+        String[] arguments = {"/user/root/data.csv","default.demo_600w","100","fourth load to hive",""};
         Args innerArgs = Args.getArgs("Load data to Hive 600w",mainClass,arguments, EngineType.SPARK);
 //        SubmitResult submitResult = SparkYarnJob.run(innerArgs);
 //        SparkYarnJob.monitor(submitResult);
